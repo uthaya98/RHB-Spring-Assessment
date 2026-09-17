@@ -96,4 +96,96 @@ public class CustomerServiceTest {
                 .findById(99L);
     }
 
+    @Test
+    void shouldThrowExceptionForInvalidEmail() {
+
+        CustomerRequest request = new CustomerRequest(
+                "John Tan",
+                "invalid-email",
+                "0123456789"
+        );
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> customerService.createCustomer(request)
+        );
+
+        assertEquals(
+                "Please enter a valid email address",
+                exception.getMessage()
+        );
+
+        verify(customerRepository, never())
+                .save(any(Customer.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenEmailIsEmpty() {
+
+        CustomerRequest request = new CustomerRequest(
+                "John Tan",
+                "",
+                "0123456789"
+        );
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> customerService.createCustomer(request)
+        );
+
+        assertEquals(
+                "Email is required",
+                exception.getMessage()
+        );
+
+        verify(customerRepository, never())
+                .save(any(Customer.class));
+    }
+
+    @Test
+    void shouldThrowExceptionForInvalidPhoneNumber() {
+
+        CustomerRequest request = new CustomerRequest(
+                "John Tan",
+                "john@gmail.com",
+                "12345"
+        );
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> customerService.createCustomer(request)
+        );
+
+        assertEquals(
+                "Please enter a valid phone number",
+                exception.getMessage()
+        );
+
+        verify(customerRepository, never())
+                .save(any(Customer.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPhoneNumberIsEmpty() {
+
+        CustomerRequest request = new CustomerRequest(
+                "John Tan",
+                "john@gmail.com",
+                ""
+        );
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> customerService.createCustomer(request)
+        );
+
+        assertEquals(
+                "Phone number is required",
+                exception.getMessage()
+        );
+
+        verify(customerRepository, never())
+                .save(any(Customer.class));
+    }
+
 }

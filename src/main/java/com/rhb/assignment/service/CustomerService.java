@@ -22,7 +22,9 @@ public class CustomerService {
     public CustomerResponse createCustomer(CustomerRequest request){
         Customer customer = new Customer();
         customer.setName(request.name());
+        validateEmail(request.email());
         customer.setEmail(request.email());
+        validatePhoneNumber(request.phone());
         customer.setPhone(request.phone());
 
         Customer savedCustomer = customerRepository.save(customer);
@@ -44,7 +46,9 @@ public class CustomerService {
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + Id));
 
         customer.setName(request.name());
+        validateEmail(request.email());
         customer.setEmail(request.email());
+        validatePhoneNumber(request.phone());
         customer.setPhone(request.phone());
 
         Customer updatedCustomer = customerRepository.save(customer);
@@ -74,5 +78,34 @@ public class CustomerService {
                 customer.getEmail(),
                 customer.getPhone()
         );
+    }
+
+    private void validatePhoneNumber(String phone) {
+        if (phone == null || phone.trim().isEmpty()) {
+            throw new IllegalArgumentException("Phone number is required");
+        }
+
+        // Malaysian mobile number:
+        // Starts with 01 and contains 9-10 digits in total
+        if (!phone.matches("^01\\d{8,9}$")) {
+            throw new IllegalArgumentException(
+                    "Please enter a valid phone number"
+            );
+        }
+    }
+
+    private void validateEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email is required");
+        }
+
+        String emailRegex =
+                "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+
+        if (!email.matches(emailRegex)) {
+            throw new IllegalArgumentException(
+                    "Please enter a valid email address"
+            );
+        }
     }
 }
