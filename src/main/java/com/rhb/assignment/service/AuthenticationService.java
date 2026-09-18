@@ -27,7 +27,6 @@ public class AuthenticationService {
     }
 
     public LoginResponse login(LoginRequest request) {
-
         Authentication authentication =
                 authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(
@@ -35,35 +34,18 @@ public class AuthenticationService {
                                 request.password()
                         )
                 );
-
-        String token =
-                jwtService.generateToken(authentication);
-
-        return new LoginResponse(
-                token,
-                "Bearer",
-                3600
-        );
+        String token = jwtService.generateToken(authentication);
+        return new LoginResponse(token, "Bearer", 3600);
     }
 
     public void register(RegisterRequest request) {
-
         if (userRepository.existsByUsername(request.username())) {
-            throw new IllegalArgumentException(
-                    "Username already exists"
-            );
+            throw new IllegalArgumentException("Username already exists");
         }
-
         AppUser user = new AppUser();
-
         user.setUsername(request.username());
-
-        user.setPassword(
-                passwordEncoder.encode(request.password())
-        );
-
+        user.setPassword(passwordEncoder.encode(request.password()));
         user.setRole("USER");
-
         userRepository.save(user);
     }
 }

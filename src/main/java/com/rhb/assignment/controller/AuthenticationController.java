@@ -24,11 +24,8 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    public AuthenticationController(
-            AuthenticationService authenticationService) {
-
-        this.authenticationService =
-                authenticationService;
+    public AuthenticationController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 
     @Operation(
@@ -36,22 +33,14 @@ public class AuthenticationController {
             description = "Authenticate using username and password and return a JWT"
     )
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(
-            @Valid @RequestBody LoginRequest request) {
-
-        return ResponseEntity.ok(
-                authenticationService.login(request)
-        );
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authenticationService.login(request));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(
-            @Valid @RequestBody RegisterRequest request) {
-
+    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest request) {
         authenticationService.register(request);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
