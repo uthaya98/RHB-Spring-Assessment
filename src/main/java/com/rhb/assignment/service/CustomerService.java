@@ -4,15 +4,20 @@ import com.rhb.assignment.dto.CustomerRequest;
 import com.rhb.assignment.dto.CustomerResponse;
 import com.rhb.assignment.entity.Customer;
 import com.rhb.assignment.exception.ResourceNotFoundException;
+import com.rhb.assignment.exception.ValidationException;
 import com.rhb.assignment.repository.CustomerRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+
+    private int counter = 0;
 
     public CustomerService(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
@@ -29,6 +34,15 @@ public class CustomerService {
 
         Customer savedCustomer = customerRepository.save(customer);
 
+        List<Customer> resList = customerRepository.findAll().stream().toList();
+
+        if(resList.size() > 0){
+            counter = resList.size();
+        } else{
+            counter++;
+        }
+
+        System.out.println(counter);
         return mapToResponse(savedCustomer);
     }
 
@@ -82,30 +96,26 @@ public class CustomerService {
 
     private void validatePhoneNumber(String phone) {
         if (phone == null || phone.trim().isEmpty()) {
-            throw new IllegalArgumentException("Phone number is required");
+            throw new ValidationException("Phone number is required");
         }
 
         // Malaysian mobile number:
         // Starts with 01 and contains 9-10 digits in total
         if (!phone.matches("^01\\d{8,9}$")) {
-            throw new IllegalArgumentException(
-                    "Please enter a valid phone number"
-            );
+            throw new ValidationException("Please enter a valid phone number");
         }
     }
 
     private void validateEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
-            throw new IllegalArgumentException("Email is required");
+            throw new ValidationException("Email is required");
         }
 
         String emailRegex =
                 "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
 
         if (!email.matches(emailRegex)) {
-            throw new IllegalArgumentException(
-                    "Please enter a valid email address"
-            );
+            throw new ValidationException("Please enter a valid email address");
         }
     }
 }
